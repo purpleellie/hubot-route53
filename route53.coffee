@@ -79,4 +79,9 @@ module.exports = (robot) ->
         return
       records = data.ResourceRecordSets
       for record in records
-        msg.send "Name: #{record.Name}\n#{record.Type}"
+        message ="Name: #{record.Name}\nRecord Type: #{record.Type}\nTTL: #{record.TTL}"
+        for rec in record.ResourceRecords
+          message += "\n#{rec.Value}"
+        if record.AliasTarget
+          message += "\nDNSName: #{record.AliasTarget.DNSName}"
+        msg.send "#{message}"
