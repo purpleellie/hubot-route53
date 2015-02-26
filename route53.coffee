@@ -20,7 +20,17 @@ module.exports = (robot) ->
   robot.respond /list hosted zones/i, (msg) ->
     route53.listHostedZones {}, (error, data) ->
       if error?
-         msg.send "Uh-oh. Something has gone wrong\n#{error}"
+         msg.send "#{error}"
+         return
+      hostedZones = data.HostedZones
+      for zone in hostedZones
+        msg.send "ID: #{zone.Id}\nName: #{zone.Name}\nCaller Reference: #{zone.CallerReference}\nRecord Count: #{zone.ResourceRecordSetCount}"
+
+module.exports = (robot) ->
+  robot.respond /list hosted zones by name/i, (msg) ->
+    route53.listHostedZones {}, (error, data) ->
+      if error?
+         msg.send "#{error}"
          return
       hostedZones = data.HostedZones
       for zone in hostedZones
@@ -34,7 +44,7 @@ module.exports = (robot) ->
       Name: name
     route53.createHostedZone params, (error, data) ->
       if error? 
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+        msg.send "#{error}"
         return
       zone = data.HostedZone
       msg.send "ID: #{zone.Id}\nName: #{zone.Name}\nCaller Reference: #{zone.CallerReference}"
@@ -45,7 +55,7 @@ module.exports = (robot) ->
       Id: id
     route53.deleteHostedZone params, (error, data) ->
       if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+        msg.send "#{error}"
         return
       msg.send "Hosted zone #{id} was deleted successfully.\n"
 
@@ -75,7 +85,7 @@ module.exports = (robot) ->
       HostedZoneId: id
     route53.listResourceRecordSets params, (error, data) ->
       if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+        msg.send "#{error}"
         return
       records = data.ResourceRecordSets
       for record in records
